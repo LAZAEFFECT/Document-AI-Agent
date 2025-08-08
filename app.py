@@ -1,11 +1,5 @@
-{
-  "nbformat": 4,
-  "nbformat_minor": 0,
-  "metadata": {
-    "colab": {
-      "provenance": [],
-      "authorship_tag": "ABX9TyN8iVjj70c4HWR8kQ54k0jR",
-    },
+
+    {
     "kernelspec": {
       "name": "python3",
       "display_name": "Python 3"
