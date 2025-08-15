@@ -1,5 +1,0 @@
-streamlit
-requests
-gspread
-fpdf2
-oauth2client
