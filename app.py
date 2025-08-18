@@ -171,7 +171,6 @@ Instructions:
 - Output the full contract as plain text, ready to copy into a PDF.
 """
 }
-            }
             prompt = prompt_templates[request_type.lower()].format(
                 client_name=client_name,
                 business_name=business_name if business_name else client_name,
