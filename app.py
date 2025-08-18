@@ -9,9 +9,16 @@ import zipfile  # built-in, no install needed
 
 # --- Secure Configuration using Streamlit Secrets ---
 # Store these in Streamlit Cloud: Settings > Secrets
+import streamlit as st
+
+# Load secrets from Streamlit
 OPENROUTER_API_KEY = st.secrets["OPENROUTER_API_KEY"]
 EMAIL_ADDRESS = st.secrets["EMAIL_ADDRESS"]
 EMAIL_APP_PASSWORD = st.secrets["EMAIL_APP_PASSWORD"]
+
+# DEBUG: check that the key is loaded
+st.write("Key length:", len(OPENROUTER_API_KEY))
+
 
 # Define the local path for the DejaVuSans font file
 # Make sure DejaVuSans.ttf is in the same directory as app.py
