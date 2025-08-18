@@ -1,20 +1,20 @@
 import streamlit as st
 import requests
 import gspread
-from fpdf import FPDF  # Correct import
+from fpdf import FPDF  # ✅ Correct import
 import smtplib
 import os
 from email.message import EmailMessage
-import zipfile # Import zipfile
+import zipfile  # built-in, no install needed
 
-# --- Hardcoded Configuration (for simplicity in Streamlit Cloud) ---
-# In a real-world scenario, use Streamlit's secrets management
-OPENROUTER_API_KEY = "sk-or-v1-2c733118e97fa6b146115dd2ff40cf34f42286ac7ef9c475698dbf4cf413033" # REPLACE with st.secrets
-EMAIL_ADDRESS = "luckythlongoane@gmail.com" # REPLACE with st.secrets
-EMAIL_APP_PASSWORD = "omjxgosqncwcisgc" # REPLACE with st.secrets
+# --- Secure Configuration using Streamlit Secrets ---
+# Store these in Streamlit Cloud: Settings > Secrets
+OPENROUTER_API_KEY = st.secrets["OPENROUTER_API_KEY"]
+EMAIL_ADDRESS = st.secrets["EMAIL_ADDRESS"]
+EMAIL_APP_PASSWORD = st.secrets["EMAIL_APP_PASSWORD"]
 
 # Define the local path for the DejaVuSans font file
-# Assume DejaVuSans.ttf is in the same directory as app.py
+# Make sure DejaVuSans.ttf is in the same directory as app.py
 dejavu_font_local_path = 'DejaVuSans.ttf'
 
 # --- Core Functions (from Colab notebook) ---
