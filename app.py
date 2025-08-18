@@ -16,9 +16,6 @@ OPENROUTER_API_KEY = st.secrets["OPENROUTER_API_KEY"]
 EMAIL_ADDRESS = st.secrets["EMAIL_ADDRESS"]
 EMAIL_APP_PASSWORD = st.secrets["EMAIL_APP_PASSWORD"]
 
-# DEBUG: check that the key is loaded
-st.write("Key length:", len(OPENROUTER_API_KEY))
-
 
 # Define the local path for the DejaVuSans font file
 # Make sure DejaVuSans.ttf is in the same directory as app.py
@@ -57,7 +54,7 @@ def send_email_pdf(to_email, client_name, filename, pdf_data):
 def generate_document_from_api(prompt):
     """Calls the OpenRouter API to generate document content."""
     headers = {"Authorization": f"Bearer {OPENROUTER_API_KEY}"}
-    payload = {"model": "mistralai/mistral-7b-instruct", "messages": [{"role": "user", "content": prompt}]}
+    payload = {"model": "mistralai/mistral-7b-instruct:free", "messages": [{"role": "user", "content": prompt}]}
 
     try:
         response = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=payload)
