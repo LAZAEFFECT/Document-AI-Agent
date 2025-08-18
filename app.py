@@ -54,7 +54,7 @@ def send_email_pdf(to_email, client_name, filename, pdf_data):
 MODEL_NAME = "openrouter/gpt-4o-mini"
 
 def generate_document_from_api(prompt):
-    """Calls the OpenRouter gpt-4o-mini API to generate document content."""
+    """Calls OpenRouter gpt-4o-mini correctly."""
     headers = {"Authorization": f"Bearer {OPENROUTER_API_KEY}"}
     payload = {
         "model": MODEL_NAME,
@@ -62,8 +62,9 @@ def generate_document_from_api(prompt):
     }
 
     try:
+        # Correct endpoint for gpt-4o-mini
         response = requests.post(
-            "https://openrouter.ai/api/v1/chat/completions",
+            "https://openrouter.ai/api/v1/completions",
             headers=headers,
             json=payload,
             timeout=30
@@ -79,7 +80,6 @@ def generate_document_from_api(prompt):
 
         response.raise_for_status()
 
-        # The response for gpt-4o-mini is typically in 'output_text'
         json_resp = response.json()
         text = json_resp.get("output_text")
         if not text:
@@ -142,19 +142,35 @@ if submitted:
         with st.spinner(f"Generating {request_type.lower()} for {client_name}..."):
             # 1. Construct the prompt
             prompt_templates = {
-                "invoice": """
-    Generate a professional invoice for {client_name} of {business_name}.
-    Details: {description}
-    - Create a unique Invoice Number and use today's date.
-    - List items with prices, calculate subtotal, a 15% VAT, and a final total.
-    - Do NOT include placeholders like '[Your Company Name]'.
-    """,
-                "contract": """
-    Generate a formal service agreement between Pretoria AI and {client_name}.
-    The core of the agreement is: {description}.
-    - Include clauses for Services, Compensation, Term, Confidentiality, and Termination.
-    - Do NOT include placeholders for signatures.
-    """
+    "invoice": """
+You are an AI assistant that generates professional invoices.
+
+Client Name: {client_name}
+Business Name: {business_name}
+Details: {description}
+
+Instructions:
+- Create a unique Invoice Number and use today's date.
+- List items with prices, calculate subtotal, a 15% VAT, and a final total.
+- Format it clearly as an invoice.
+- Do NOT include placeholders like '[Your Company Name]'.
+
+Output the full invoice as plain text, ready to copy into a PDF.
+""",
+    "contract": """
+You are an AI assistant that generates formal service agreements.
+
+Client Name: {client_name}
+Business Name: {business_name}
+Core Agreement Details: {description}
+
+Instructions:
+- Include clauses for Services, Compensation, Term, Confidentiality, and Termination.
+- Format it clearly as a contract.
+- Do NOT include placeholders for signatures.
+- Output the full contract as plain text, ready to copy into a PDF.
+"""
+}
             }
             prompt = prompt_templates[request_type.lower()].format(
                 client_name=client_name,
