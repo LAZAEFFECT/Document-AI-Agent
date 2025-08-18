@@ -5,12 +5,6 @@ import smtplib
 import os
 from email.message import EmailMessage
 
-# --- Secure Configuration using Streamlit Secrets ---
-# Store these in Streamlit Cloud: Settings > Secrets
-OPENROUTER_API_KEY = st.secrets["OPENROUTER_API_KEY"]
-EMAIL_ADDRESS = st.secrets["EMAIL_ADDRESS"]
-EMAIL_APP_PASSWORD = st.secrets["EMAIL_APP_PASSWORD"]
-
 import streamlit as st
 import requests
 
@@ -34,6 +28,12 @@ except requests.exceptions.HTTPError as e:
 except Exception as e:
     st.error(f"Other error: {e}")
 
+
+# --- Secure Configuration using Streamlit Secrets ---
+# Store these in Streamlit Cloud: Settings > Secrets
+OPENROUTER_API_KEY = st.secrets["OPENROUTER_API_KEY"]
+EMAIL_ADDRESS = st.secrets["EMAIL_ADDRESS"]
+EMAIL_APP_PASSWORD = st.secrets["EMAIL_APP_PASSWORD"]
 
 # Local font path (ensure DejaVuSans.ttf is in your app folder)
 dejavu_font_local_path = "DejaVuSans.ttf"
