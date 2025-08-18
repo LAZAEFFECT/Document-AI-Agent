@@ -51,35 +51,47 @@ def send_email_pdf(to_email, client_name, filename, pdf_data):
     except Exception as e:
         return False, str(e)
 
+# --- Choose the model your API key can access ---
+MODEL_NAME = "openrouter/gpt-4o-mini"  # Replace if you get a different allowed model
+
 def generate_document_from_api(prompt):
-    """
-    Calls the OpenRouter API to generate document content.
-    Retries with ':free' model if 401 occurs.
-    Does NOT expose API key in logs.
-    """
+    """Calls the OpenRouter API to generate document content with better error handling."""
     headers = {"Authorization": f"Bearer {OPENROUTER_API_KEY}"}
-    models_to_try = ["mistralai/mistral-7b-instruct", "mistralai/mistral-7b-instruct:free"]
+    payload = {
+        "model": MODEL_NAME,
+        "messages": [{"role": "user", "content": prompt}]
+    }
 
-    for model in models_to_try:
-        payload = {"model": model, "messages": [{"role": "user", "content": prompt}]}
-        st.info(f"Attempting to generate document with model: {model}")  # Safe debug info
-        try:
-            response = requests.post(
-                "https://openrouter.ai/api/v1/chat/completions", headers=headers, json=payload
-            )
-            if response.status_code == 401:
-                st.warning(f"Unauthorized with model {model}. Retrying next model if available...")
-                continue  # Try next model
-            response.raise_for_status()
-            text = response.json()["choices"][0]["message"]["content"]
-            return text, None
-        except requests.exceptions.RequestException as e:
-            # Log error safely without revealing the API key
-            return None, f"API request failed with model {model}. Status code: {getattr(e.response, 'status_code', 'N/A')}"
-        except (KeyError, IndexError) as e:
-            return None, f"Error processing API response with model {model}: {e}"
+    try:
+        response = requests.post(
+            "https://openrouter.ai/api/v1/chat/completions",
+            headers=headers,
+            json=payload,
+            timeout=30
+        )
+        # Debug info without exposing API key
+        st.write(f"API request status code: {response.status_code}")
 
-    return None, "Failed to generate document: Unauthorized for all models tried."
+        if response.status_code == 401:
+            return None, "Unauthorized: Your API key is invalid or expired."
+        elif response.status_code == 403:
+            return None, f"Forbidden: Your API key does not have access to model '{MODEL_NAME}'."
+
+        response.raise_for_status()
+
+        # Extract content safely
+        choices = response.json().get("choices", [])
+        if not choices or "message" not in choices[0]:
+            return None, "API response missing 'choices[0].message.content'."
+        text = choices[0]["message"]["content"]
+        return text, None
+
+    except requests.exceptions.HTTPError as http_err:
+        return None, f"HTTP error: {http_err} | Status code: {response.status_code}"
+    except requests.exceptions.RequestException as req_err:
+        return None, f"Request error: {req_err}"
+    except Exception as e:
+        return None, f"Unexpected error: {e}"
 
 def create_pdf(text_content, font_path):
     """Creates a PDF from the given text content using a specified font."""
