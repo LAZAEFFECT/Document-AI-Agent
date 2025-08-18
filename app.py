@@ -5,30 +5,6 @@ import smtplib
 import os
 from email.message import EmailMessage
 
-import streamlit as st
-import requests
-
-# --- Load secrets ---
-OPENROUTER_API_KEY = st.secrets["OPENROUTER_API_KEY"]
-EMAIL_ADDRESS = st.secrets["EMAIL_ADDRESS"]
-EMAIL_APP_PASSWORD = st.secrets["EMAIL_APP_PASSWORD"]
-
-# --- DEBUG: Check OpenRouter account balance / status ---
-st.subheader("🛠 OpenRouter Account Debug")
-headers = {"Authorization": f"Bearer {OPENROUTER_API_KEY}"}
-
-try:
-    response = requests.get("https://openrouter.ai/api/v1/account", headers=headers)
-    response.raise_for_status()
-    st.write("✅ Account info:", response.json())
-except requests.exceptions.HTTPError as e:
-    st.error(f"HTTP error: {e}")
-    if response.text:
-        st.text(f"Response: {response.text}")
-except Exception as e:
-    st.error(f"Other error: {e}")
-
-
 # --- Secure Configuration using Streamlit Secrets ---
 # Store these in Streamlit Cloud: Settings > Secrets
 OPENROUTER_API_KEY = st.secrets["OPENROUTER_API_KEY"]
