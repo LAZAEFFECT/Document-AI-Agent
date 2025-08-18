@@ -62,13 +62,12 @@ def generate_document_from_api(prompt):
 
     payload = {
         "model": "openrouter/gpt-4o-mini",
-        "input": prompt
+        "prompt": prompt  # <-- corrected key
     }
 
     try:
         response = requests.post("https://openrouter.ai/api/v1/completions", headers=headers, json=payload)
         response.raise_for_status()
-        # gpt-4o-mini returns generated text in 'output_text' key
         text = response.json().get("output_text", "")
         if not text:
             return None, "No output returned from API."
