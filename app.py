@@ -1,7 +1,7 @@
 import streamlit as st
 import requests
 import gspread
-from fpdf2 import FPDF # Corrected import
+from fpdf import FPDF  # Correct import
 import smtplib
 import os
 from email.message import EmailMessage
