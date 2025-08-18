@@ -51,15 +51,14 @@ def send_email_pdf(to_email, client_name, filename, pdf_data):
     except Exception as e:
         return False, str(e)
 
-# --- Choose the model your API key can access ---
-MODEL_NAME = "openrouter/gpt-4o-mini"  # Replace if you get a different allowed model
+MODEL_NAME = "openrouter/gpt-4o-mini"
 
 def generate_document_from_api(prompt):
-    """Calls the OpenRouter API to generate document content with better error handling."""
+    """Calls the OpenRouter gpt-4o-mini API to generate document content."""
     headers = {"Authorization": f"Bearer {OPENROUTER_API_KEY}"}
     payload = {
         "model": MODEL_NAME,
-        "messages": [{"role": "user", "content": prompt}]
+        "input": prompt
     }
 
     try:
@@ -69,21 +68,23 @@ def generate_document_from_api(prompt):
             json=payload,
             timeout=30
         )
-        # Debug info without exposing API key
         st.write(f"API request status code: {response.status_code}")
 
         if response.status_code == 401:
             return None, "Unauthorized: Your API key is invalid or expired."
         elif response.status_code == 403:
             return None, f"Forbidden: Your API key does not have access to model '{MODEL_NAME}'."
+        elif response.status_code == 400:
+            return None, f"Bad Request: Check the prompt format and payload for '{MODEL_NAME}'."
 
         response.raise_for_status()
 
-        # Extract content safely
-        choices = response.json().get("choices", [])
-        if not choices or "message" not in choices[0]:
-            return None, "API response missing 'choices[0].message.content'."
-        text = choices[0]["message"]["content"]
+        # The response for gpt-4o-mini is typically in 'output_text'
+        json_resp = response.json()
+        text = json_resp.get("output_text")
+        if not text:
+            return None, "API response missing 'output_text'."
+
         return text, None
 
     except requests.exceptions.HTTPError as http_err:
