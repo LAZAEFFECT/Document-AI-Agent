@@ -1,5 +1,7 @@
 streamlit
 requests
 gspread
-fpdf2
 oauth2client
+fpdf2
+pypdf
+python-docx
