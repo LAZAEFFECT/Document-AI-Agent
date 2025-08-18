@@ -11,7 +11,7 @@ import zipfile # Import zipfile
 # In a real-world scenario, use Streamlit's secrets management
 OPENROUTER_API_KEY = "sk-or-v1-2c733118e97fa6b146115dd2ff40cf34f42286ac7ef9c475698dbf4cf413033" # REPLACE with st.secrets
 EMAIL_ADDRESS = "luckythlongoane@gmail.com" # REPLACE with st.secrets
-EMAIL_APP_PASSWORD = "dxmxapkcwzqubuxo" # REPLACE with st.secrets
+EMAIL_APP_PASSWORD = "omjxgosqncwcisgc" # REPLACE with st.secrets
 
 # Define the local path for the DejaVuSans font file
 # Assume DejaVuSans.ttf is in the same directory as app.py
