@@ -54,45 +54,30 @@ def send_email_pdf(to_email, client_name, filename, pdf_data):
 MODEL_NAME = "openrouter/gpt-4o-mini"
 
 def generate_document_from_api(prompt):
-    """Calls OpenRouter gpt-4o-mini correctly."""
-    headers = {"Authorization": f"Bearer {OPENROUTER_API_KEY}"}
+    """Calls OpenRouter API using gpt-4o-mini to generate document content."""
+    headers = {
+        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+        "Content-Type": "application/json"
+    }
+
     payload = {
-        "model": MODEL_NAME,
+        "model": "openrouter/gpt-4o-mini",
         "input": prompt
     }
 
     try:
-        # Correct endpoint for gpt-4o-mini
-        response = requests.post(
-            "https://openrouter.ai/api/v1/completions",
-            headers=headers,
-            json=payload,
-            timeout=30
-        )
-        st.write(f"API request status code: {response.status_code}")
-
-        if response.status_code == 401:
-            return None, "Unauthorized: Your API key is invalid or expired."
-        elif response.status_code == 403:
-            return None, f"Forbidden: Your API key does not have access to model '{MODEL_NAME}'."
-        elif response.status_code == 400:
-            return None, f"Bad Request: Check the prompt format and payload for '{MODEL_NAME}'."
-
+        response = requests.post("https://openrouter.ai/api/v1/completions", headers=headers, json=payload)
         response.raise_for_status()
-
-        json_resp = response.json()
-        text = json_resp.get("output_text")
+        # gpt-4o-mini returns generated text in 'output_text' key
+        text = response.json().get("output_text", "")
         if not text:
-            return None, "API response missing 'output_text'."
-
+            return None, "No output returned from API."
         return text, None
 
-    except requests.exceptions.HTTPError as http_err:
-        return None, f"HTTP error: {http_err} | Status code: {response.status_code}"
-    except requests.exceptions.RequestException as req_err:
-        return None, f"Request error: {req_err}"
-    except Exception as e:
-        return None, f"Unexpected error: {e}"
+    except requests.exceptions.HTTPError as e:
+        return None, f"HTTP error: {e} | Status code: {response.status_code} | Response: {response.text}"
+    except requests.exceptions.RequestException as e:
+        return None, f"API request failed: {e}"
 
 def create_pdf(text_content, font_path):
     """Creates a PDF from the given text content using a specified font."""
